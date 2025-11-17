@@ -25,6 +25,18 @@ A web-based platform for reducing the cost of Measurement, Reporting, and Verifi
 - Calculate final Verified Carbon Tonnes (VCT)
 - Display Scientific Confidence Score
 - Verification status reporting
+- **Automatic persistence**: All verifications are saved to Firebase
+
+### 5. Performance Dashboard
+- **Project List**: View all saved projects with verification counts
+- **Summary Metrics**: 
+  - Total VCT Issued
+  - Total Samples Taken
+  - Efficiency Metric (VCT per Sample)
+  - Average Confidence Score
+- **VCT Over Time Chart**: Line graph showing carbon credit generation trends
+- **Confidence Trend Chart**: Bar chart showing confidence scores over time
+- Real-time updates from Firebase
 
 ## Usage
 
@@ -45,10 +57,43 @@ A web-based platform for reducing the cost of Measurement, Reporting, and Verifi
 - **Leaflet.js**: Interactive map functionality
 - **Leaflet Draw**: Polygon drawing tools
 - **Nominatim (OpenStreetMap)**: Address geocoding service for location search
+- **Firebase**: Backend services (Firestore for data, Auth for authentication)
+- **Chart.js**: Data visualization for analytics dashboard
 
 ## Browser Compatibility
 
 Works in all modern browsers that support ES6 JavaScript and Leaflet.js.
+
+## Backend & Persistence
+
+The application uses Firebase Firestore for data persistence:
+
+### Data Collections
+
+1. **Projects**: `/artifacts/{appId}/users/{userId}/projects`
+   - Stores project data (boundary, land use, practices, area)
+   - Allows users to save and return to unfinished projects
+
+2. **Verifications**: `/artifacts/{appId}/users/{userId}/verifications`
+   - Stores completed verification records
+   - Includes VCT, confidence score, timestamp, and sample data
+   - Used for analytics and historical tracking
+
+### Authentication
+
+- Uses Firebase Auth with custom token authentication
+- Supports `__initial_auth_token` for Canvas environment integration
+- Falls back to demo mode if Firebase is not configured
+
+### Configuration
+
+To use Firebase, update `firebase-config.js` with your Firebase project credentials:
+- API Key
+- Auth Domain
+- Project ID
+- Storage Bucket
+- Messaging Sender ID
+- App ID
 
 ## Notes
 
@@ -56,5 +101,5 @@ This is a demo/prototype application. In production, it would integrate with:
 - Real satellite imagery APIs
 - Machine learning models for carbon prediction
 - Actual uncertainty calculations
-- Database for project storage
-- Authentication and user management
+- Enhanced authentication and user management
+- Additional analytics and reporting features

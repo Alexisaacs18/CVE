@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <header class="app-header">
@@ -17,9 +18,15 @@
             </h1>
             <p class="app-subtitle">Hybrid MRV Platform</p>
         </div>
+        <nav class="main-nav">
+            <button class="nav-tab active" data-view="project">Project View</button>
+            <button class="nav-tab" data-view="performance">Performance Dashboard</button>
+        </nav>
     </header>
 
     <div class="app-body">
+        <!-- Project View -->
+        <div id="project-view" class="view-container active">
         <!-- Sidebar -->
         <aside class="sidebar-container">
             <!-- Project Creation Section -->
@@ -183,11 +190,99 @@
                 </div>
             </div>
         </main>
+        </div>
+
+        <!-- Performance Dashboard View -->
+        <div id="performance-view" class="view-container">
+            <div class="dashboard-container">
+                <h2 class="dashboard-title">Performance Dashboard</h2>
+                
+                <!-- Summary Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card-large">
+                        <div class="metric-label">Total VCT Issued</div>
+                        <div id="total-vct" class="metric-value-large">0</div>
+                    </div>
+                    <div class="metric-card-large">
+                        <div class="metric-label">Total Samples</div>
+                        <div id="total-samples" class="metric-value-large">0</div>
+                    </div>
+                    <div class="metric-card-large">
+                        <div class="metric-label">Efficiency (VCT/Sample)</div>
+                        <div id="efficiency-metric" class="metric-value-large">0.0</div>
+                    </div>
+                    <div class="metric-card-large">
+                        <div class="metric-label">Avg Confidence</div>
+                        <div id="avg-confidence" class="metric-value-large">0%</div>
+                    </div>
+                </div>
+
+                <!-- Project List -->
+                <div class="dashboard-section">
+                    <h3 class="section-title">Projects</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Project ID</th>
+                                    <th>Land Use</th>
+                                    <th>Area (ha)</th>
+                                    <th>Verifications</th>
+                                    <th>Latest VCT</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projects-table-body">
+                                <tr>
+                                    <td colspan="6" class="empty-state">No projects yet. Create a project to get started.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="dashboard-section">
+                        <h3 class="section-title">VCT Over Time</h3>
+                        <canvas id="vct-chart"></canvas>
+                    </div>
+                    <div class="dashboard-section">
+                        <h3 class="section-title">Confidence Trend</h3>
+                        <canvas id="confidence-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Make Firebase available globally
+        window.firebaseModules = {
+            initializeApp,
+            getAuth,
+            signInWithCustomToken,
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            onSnapshot,
+            query,
+            where,
+            orderBy
+        };
+    </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
 

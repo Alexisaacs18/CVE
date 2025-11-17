@@ -127,7 +127,7 @@ function generateMockData(projectData) {
 }
 
 // Create project
-function createProject() {
+async function createProject() {
     const landUse = document.getElementById('land-use').value;
     const projectDate = document.getElementById('project-date').value;
     const practices = document.getElementById('practices').value;
@@ -148,12 +148,16 @@ function createProject() {
         area_ha: areaHa,
         projectDate: projectDate,
         practices: practices,
-        geometry: geoJson
+        geometry: geoJson,
+        createdAt: new Date().toISOString()
     };
     
     // Generate mock data
     const mockData = generateMockData(projectData);
     projectData = { ...projectData, ...mockData };
+    
+    // Save to Firebase
+    await saveProject(projectData);
     
     // Update UI
     document.getElementById('project-id').textContent = projectData.projectId;
@@ -318,7 +322,7 @@ function checkSampleInputsComplete() {
 }
 
 // Run verification
-function runVerification() {
+async function runVerification() {
     if (!projectData || !projectData.optimized_sampling_points) {
         alert('Please run optimization first!');
         return;
@@ -337,13 +341,23 @@ function runVerification() {
     const vct = Math.round(avgReading * projectData.area_ha * 0.85);
     
     // Calculate confidence (simulated)
-    const confidence = (95 + Math.random() * 3).toFixed(1);
+    const confidence = parseFloat((95 + Math.random() * 3).toFixed(1));
     
     // Update UI
     document.getElementById('vct-value').textContent = `${vct.toLocaleString()} VCT`;
     document.getElementById('confidence-value').textContent = `${confidence}%`;
     document.getElementById('status-value').textContent = 'Verified & Ready to Mint';
     document.getElementById('verification-results').style.display = 'block';
+    
+    // Save verification to Firebase
+    await saveVerification({
+        projectId: projectData.projectId,
+        vct: vct,
+        confidence: confidence,
+        timestamp: new Date().toISOString(),
+        sampleCount: projectData.optimized_sampling_points.length,
+        readings: readings
+    });
 }
 
 // Event listeners
@@ -414,6 +428,20 @@ document.addEventListener('DOMContentLoaded', function() {
             hideSearchResults();
         }
     });
+    
+    // Navigation tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const view = this.dataset.view;
+            switchView(view);
+        });
+    });
+    
+    // Initialize Firebase when ready
+    window.onFirebaseReady = function() {
+        console.log('Firebase ready, initializing app');
+        // Load projects if needed
+    };
 });
 
 // Geocoding functions
@@ -531,6 +559,89 @@ function hideSearchResults() {
     resultsContainer.innerHTML = '';
 }
 
+// Firebase CRUD Operations
+async function saveProject(projectData) {
+    if (!window.firebaseConfig || !window.firebaseConfig.isInitialized()) {
+        console.log('Firebase not initialized, skipping save');
+        return;
+    }
+    
+    try {
+        const db = window.firebaseConfig.getDb();
+        const userId = window.firebaseConfig.getUserId();
+        const APP_ID = window.firebaseConfig.APP_ID;
+        
+        const { doc, setDoc } = window.firebaseModules;
+        const projectRef = doc(db, `artifacts/${APP_ID}/users/${userId}/projects/${projectData.projectId}`);
+        
+        await setDoc(projectRef, {
+            ...projectData,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+        
+        console.log('Project saved:', projectData.projectId);
+    } catch (error) {
+        console.error('Error saving project:', error);
+    }
+}
+
+async function saveVerification(verificationData) {
+    if (!window.firebaseConfig || !window.firebaseConfig.isInitialized()) {
+        console.log('Firebase not initialized, skipping save');
+        return;
+    }
+    
+    try {
+        const db = window.firebaseConfig.getDb();
+        const userId = window.firebaseConfig.getUserId();
+        const APP_ID = window.firebaseConfig.APP_ID;
+        
+        const { collection, doc, setDoc } = window.firebaseModules;
+        const verificationId = `verification-${Date.now()}`;
+        const verificationRef = doc(db, `artifacts/${APP_ID}/users/${userId}/verifications/${verificationId}`);
+        
+        await setDoc(verificationRef, {
+            ...verificationData,
+            id: verificationId,
+            userId: userId
+        });
+        
+        console.log('Verification saved:', verificationId);
+    } catch (error) {
+        console.error('Error saving verification:', error);
+    }
+}
+
+// Navigation functions
+function switchView(viewName) {
+    // Hide all views
+    document.querySelectorAll('.view-container').forEach(view => {
+        view.classList.remove('active');
+    });
+    
+    // Show selected view
+    const targetView = document.getElementById(`${viewName}-view`);
+    if (targetView) {
+        targetView.classList.add('active');
+    }
+    
+    // Update nav tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const activeTab = document.querySelector(`[data-view="${viewName}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+    
+    // Refresh dashboard if switching to performance view
+    if (viewName === 'performance' && window.refreshDashboard) {
+        window.refreshDashboard();
+    }
+}
+
 // Make functions globally available for inline handlers
 window.updateSampleInput = updateSampleInput;
+window.switchView = switchView;
 
