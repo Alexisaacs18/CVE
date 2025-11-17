@@ -5,6 +5,7 @@ A web-based platform for reducing the cost of Measurement, Reporting, and Verifi
 ## Features
 
 ### 1. Project & Boundary Management
+- **Address Search**: Search for addresses or locations using the search bar in the top-right corner of the map
 - Draw polygon boundaries directly on the map
 - Input project details (Land Use Type, Start Date, Practices, Area)
 - Automatic project ID generation
@@ -28,13 +29,14 @@ A web-based platform for reducing the cost of Measurement, Reporting, and Verifi
 ## Usage
 
 1. Open `index.html` in a modern web browser
-2. Draw a polygon on the map to define your project boundary
-3. Fill in the project details form
-4. Click "Create Project" to initialize
-5. Toggle MRV layers to visualize different data layers
-6. Click "Run Sampling Optimization" to generate sampling points
-7. Enter carbon readings for each sampling point
-8. Click "Run Final Verification" to get VCT and confidence score
+2. **Optional**: Use the search bar to find and navigate to a specific address or location
+3. Draw a polygon on the map to define your project boundary
+4. Fill in the project details form
+5. Click "Create Project" to initialize
+6. Toggle MRV layers to visualize different data layers
+7. Click "Run Sampling Optimization" to generate sampling points
+8. Enter carbon readings for each sampling point
+9. Click "Run Final Verification" to get VCT and confidence score
 
 ## Technical Stack
 
@@ -42,6 +44,7 @@ A web-based platform for reducing the cost of Measurement, Reporting, and Verifi
 - **JavaScript (Vanilla)**: Application logic
 - **Leaflet.js**: Interactive map functionality
 - **Leaflet Draw**: Polygon drawing tools
+- **Nominatim (OpenStreetMap)**: Address geocoding service for location search
 
 ## Browser Compatibility
 

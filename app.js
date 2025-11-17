@@ -8,6 +8,8 @@ let currentLayers = {
     aiPrediction: null,
     uncertainty: null
 };
+let searchMarker = null;
+let searchTimeout = null;
 
 // Initialize map
 function initMap() {
@@ -375,7 +377,159 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Verification button
     document.getElementById('verify-btn').addEventListener('click', runVerification);
+    
+    // Search functionality
+    const searchInput = document.getElementById('address-search');
+    const searchBtn = document.getElementById('search-btn');
+    
+    // Search on button click
+    searchBtn.addEventListener('click', function() {
+        const query = searchInput.value.trim();
+        if (query) {
+            performGeocodeSearch(query);
+        }
+    });
+    
+    // Search on Enter key
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                performGeocodeSearch(query);
+            }
+        }
+    });
+    
+    // Search as user types (debounced)
+    searchInput.addEventListener('input', function() {
+        const query = searchInput.value.trim();
+        searchAddress(query);
+    });
+    
+    // Hide results when clicking outside
+    document.addEventListener('click', function(e) {
+        const searchContainer = document.querySelector('.search-container');
+        if (!searchContainer.contains(e.target)) {
+            hideSearchResults();
+        }
+    });
 });
+
+// Geocoding functions
+function searchAddress(query) {
+    if (!query || query.trim().length < 3) {
+        hideSearchResults();
+        return;
+    }
+    
+    const resultsContainer = document.getElementById('search-results');
+    resultsContainer.innerHTML = '<div class="search-loading">Searching...</div>';
+    resultsContainer.classList.add('active');
+    
+    // Clear previous timeout
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+    }
+    
+    // Debounce search requests
+    searchTimeout = setTimeout(() => {
+        performGeocodeSearch(query);
+    }, 500);
+}
+
+function performGeocodeSearch(query) {
+    const resultsContainer = document.getElementById('search-results');
+    
+    // Use Nominatim (OpenStreetMap's geocoding service)
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`;
+    
+    fetch(url, {
+        headers: {
+            'User-Agent': 'Carbon Verification Engine'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        displaySearchResults(data);
+    })
+    .catch(error => {
+        console.error('Geocoding error:', error);
+        resultsContainer.innerHTML = '<div class="search-no-results">Error searching. Please try again.</div>';
+    });
+}
+
+function displaySearchResults(results) {
+    const resultsContainer = document.getElementById('search-results');
+    
+    if (!results || results.length === 0) {
+        resultsContainer.innerHTML = '<div class="search-no-results">No results found</div>';
+        return;
+    }
+    
+    resultsContainer.innerHTML = results.map((result, index) => {
+        const displayName = result.display_name;
+        const address = result.address || {};
+        const shortName = address.road || address.city || address.county || displayName.split(',')[0];
+        
+        return `
+            <div class="search-result-item" data-index="${index}" data-lat="${result.lat}" data-lng="${result.lon}" data-name="${displayName.replace(/"/g, '&quot;')}">
+                <div class="search-result-name">${shortName}</div>
+                <div class="search-result-address">${displayName}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // Add click handlers to results
+    resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const lat = parseFloat(this.dataset.lat);
+            const lng = parseFloat(this.dataset.lng);
+            const name = this.dataset.name;
+            goToLocation(lat, lng, name);
+        });
+    });
+}
+
+function goToLocation(lat, lng, name) {
+    // Remove previous marker
+    if (searchMarker) {
+        map.removeLayer(searchMarker);
+    }
+    
+    // Add new marker
+    searchMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+            className: 'search-marker',
+            html: `<div style="background: #3b82f6; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">📍</div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        })
+    }).addTo(map);
+    
+    // Bind popup
+    if (name) {
+        searchMarker.bindPopup(`<strong>${name}</strong>`).openPopup();
+    }
+    
+    // Zoom to location
+    map.setView([lat, lng], 15, {
+        animate: true,
+        duration: 0.5
+    });
+    
+    // Hide search results
+    hideSearchResults();
+    
+    // Clear search input
+    document.getElementById('address-search').value = '';
+}
+
+function hideSearchResults() {
+    const resultsContainer = document.getElementById('search-results');
+    resultsContainer.classList.remove('active');
+    resultsContainer.innerHTML = '';
+}
 
 // Make functions globally available for inline handlers
 window.updateSampleInput = updateSampleInput;

@@ -157,6 +157,26 @@
         <main class="map-container">
             <div id="map"></div>
             <div class="map-controls">
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            id="address-search" 
+                            class="search-input" 
+                            placeholder="Search for an address or location..."
+                            autocomplete="off"
+                        />
+                        <button id="search-btn" class="search-button" title="Search">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+                
                 <div class="map-legend" id="map-legend" style="display: none;">
                     <h3>Drawing Tools</h3>
                     <p>Use the drawing tools to create your project boundary polygon</p>
