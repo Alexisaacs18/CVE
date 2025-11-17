@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Verification Engine (CVE) - Hybrid MRV Platform</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="app-title">
+                <span class="title-icon">🌱</span>
+                Carbon Verification Engine (CVE)
+            </h1>
+            <p class="app-subtitle">Hybrid MRV Platform</p>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar-container">
+            <!-- Project Creation Section -->
+            <section class="panel" id="project-panel">
+                <h2 class="panel-title">Project & Boundary</h2>
+                <div class="form-group">
+                    <label for="land-use">Land Use Type</label>
+                    <select id="land-use" class="form-control">
+                        <option value="">Select Land Use Type</option>
+                        <option value="Cropland">Cropland</option>
+                        <option value="Rangeland">Rangeland</option>
+                        <option value="Forest">Forest</option>
+                        <option value="Wetland">Wetland</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="project-date">Project Start Date</label>
+                    <input type="date" id="project-date" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="practices">Planned Practices</label>
+                    <select id="practices" class="form-control">
+                        <option value="">Select Practice</option>
+                        <option value="No-Till">No-Till</option>
+                        <option value="Afforestation">Afforestation</option>
+                        <option value="Cover Crops">Cover Crops</option>
+                        <option value="Rotational Grazing">Rotational Grazing</option>
+                        <option value="Restoration">Restoration</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="area-ha">Area (hectares)</label>
+                    <input type="number" id="area-ha" class="form-control" placeholder="Enter area" />
+                </div>
+                <button id="create-project-btn" class="btn btn-primary" disabled>
+                    Create Project
+                </button>
+                <div id="project-info" class="project-info" style="display: none;">
+                    <div class="info-row">
+                        <span class="info-label">Project ID:</span>
+                        <span id="project-id" class="info-value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Area:</span>
+                        <span id="project-area" class="info-value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Baseline (tCO₂e/yr):</span>
+                        <span id="baseline" class="info-value"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Layer Controls Section -->
+            <section class="panel" id="layers-panel" style="display: none;">
+                <h2 class="panel-title">MRV Engine Layers</h2>
+                <div class="layer-control">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="layer-remote" class="layer-toggle">
+                        <span class="toggle-text">Remote Sensing Layer</span>
+                        <span class="toggle-indicator"></span>
+                    </label>
+                    <p class="layer-description">Biomass/Vegetation Index visualization</p>
+                </div>
+                <div class="layer-control">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="layer-ai" class="layer-toggle">
+                        <span class="toggle-text">AI Model Prediction</span>
+                        <span class="toggle-indicator"></span>
+                    </label>
+                    <p class="layer-description">Predicted carbon sequestration rate</p>
+                </div>
+                <div class="layer-control">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="layer-uncertainty" class="layer-toggle">
+                        <span class="toggle-text">Uncertainty Map</span>
+                        <span class="toggle-indicator"></span>
+                    </label>
+                    <p class="layer-description">Model confidence heatmap (sampling priority)</p>
+                </div>
+            </section>
+
+            <!-- Optimization Section -->
+            <section class="panel" id="optimization-panel" style="display: none;">
+                <h2 class="panel-title">Ground-Truthing Optimization</h2>
+                <button id="optimize-btn" class="btn btn-primary btn-large">
+                    Run Sampling Optimization
+                </button>
+                <div id="optimization-results" style="display: none;">
+                    <div class="metric-card">
+                        <div class="metric-row">
+                            <span class="metric-label">Traditional Samples:</span>
+                            <span id="traditional-samples" class="metric-value">-</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Optimized Samples:</span>
+                            <span id="optimized-samples" class="metric-value highlight">-</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Cost Reduction:</span>
+                            <span id="cost-reduction" class="metric-value success">-</span>
+                        </div>
+                    </div>
+                    <div class="sampling-points-list" id="sampling-points-list"></div>
+                </div>
+            </section>
+
+            <!-- Verification Section -->
+            <section class="panel" id="verification-panel" style="display: none;">
+                <h2 class="panel-title">Verification & Reporting</h2>
+                <div id="sample-inputs" class="sample-inputs"></div>
+                <button id="verify-btn" class="btn btn-primary btn-large" disabled>
+                    Run Final Verification
+                </button>
+                <div id="verification-results" style="display: none;">
+                    <div class="verification-card">
+                        <div class="verification-metric">
+                            <span class="verification-label">Verified Carbon Tonnes (VCT):</span>
+                            <span id="vct-value" class="verification-value large">-</span>
+                        </div>
+                        <div class="verification-metric">
+                            <span class="verification-label">Scientific Confidence Score:</span>
+                            <span id="confidence-value" class="verification-value">-</span>
+                        </div>
+                        <div class="verification-metric">
+                            <span class="verification-label">Verification Status:</span>
+                            <span id="status-value" class="verification-value success">-</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Map Container -->
+        <main class="map-container">
+            <div id="map"></div>
+            <div class="map-controls">
+                <div class="map-legend" id="map-legend" style="display: none;">
+                    <h3>Drawing Tools</h3>
+                    <p>Use the drawing tools to create your project boundary polygon</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
