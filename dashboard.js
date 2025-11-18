@@ -53,6 +53,12 @@ async function loadDashboardData() {
 
 // Demo data for when Firebase is not available
 function loadDemoData() {
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneMonth = 30 * oneDay;
+    const oneYear = 365 * oneDay;
+    
+    // Generate realistic projects with varied dates
     projectsData = [
         {
             id: 'CVE-CROPLAND-001',
@@ -60,28 +66,219 @@ function loadDemoData() {
             landUse: 'Cropland',
             area_ha: 1250,
             practices: 'No-Till',
-            createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
+            projectDate: '2022-01-15',
+            createdAt: new Date(now - 18 * oneMonth).toISOString()
+        },
+        {
+            id: 'CVE-FOREST-002',
+            projectId: 'CVE-FOREST-002',
+            landUse: 'Forest',
+            area_ha: 3200,
+            practices: 'Afforestation',
+            projectDate: '2021-06-01',
+            createdAt: new Date(now - 30 * oneMonth).toISOString()
+        },
+        {
+            id: 'CVE-RANGELAND-003',
+            projectId: 'CVE-RANGELAND-003',
+            landUse: 'Rangeland',
+            area_ha: 850,
+            practices: 'Rotational Grazing',
+            projectDate: '2022-09-10',
+            createdAt: new Date(now - 15 * oneMonth).toISOString()
+        },
+        {
+            id: 'CVE-CROPLAND-004',
+            projectId: 'CVE-CROPLAND-004',
+            landUse: 'Cropland',
+            area_ha: 2100,
+            practices: 'Cover Crops',
+            projectDate: '2023-03-20',
+            createdAt: new Date(now - 9 * oneMonth).toISOString()
+        },
+        {
+            id: 'CVE-WETLAND-005',
+            projectId: 'CVE-WETLAND-005',
+            landUse: 'Wetland',
+            area_ha: 450,
+            practices: 'Restoration',
+            projectDate: '2022-11-05',
+            createdAt: new Date(now - 13 * oneMonth).toISOString()
+        },
+        {
+            id: 'CVE-FOREST-006',
+            projectId: 'CVE-FOREST-006',
+            landUse: 'Forest',
+            area_ha: 5800,
+            practices: 'Afforestation',
+            projectDate: '2020-04-12',
+            createdAt: new Date(now - 44 * oneMonth).toISOString()
         }
     ];
     
+    // Generate realistic verifications with historical data
     verificationsData = [
+        // CVE-CROPLAND-001 - Multiple verifications over time
         {
-            id: 'verification-1',
+            id: 'verification-001',
             projectId: 'CVE-CROPLAND-001',
-            vct: 1245,
-            confidence: 96.2,
-            timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+            vct: 1180,
+            confidence: 94.8,
+            timestamp: new Date(now - 12 * oneMonth).toISOString(),
             sampleCount: 8
         },
         {
-            id: 'verification-2',
+            id: 'verification-002',
+            projectId: 'CVE-CROPLAND-001',
+            vct: 1245,
+            confidence: 96.2,
+            timestamp: new Date(now - 6 * oneMonth).toISOString(),
+            sampleCount: 8
+        },
+        {
+            id: 'verification-003',
             projectId: 'CVE-CROPLAND-001',
             vct: 1320,
             confidence: 97.1,
-            timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
             sampleCount: 8
+        },
+        
+        // CVE-FOREST-002 - Annual verifications
+        {
+            id: 'verification-004',
+            projectId: 'CVE-FOREST-002',
+            vct: 2850,
+            confidence: 95.3,
+            timestamp: new Date(now - 24 * oneMonth).toISOString(),
+            sampleCount: 12
+        },
+        {
+            id: 'verification-005',
+            projectId: 'CVE-FOREST-002',
+            vct: 3120,
+            confidence: 96.7,
+            timestamp: new Date(now - 12 * oneMonth).toISOString(),
+            sampleCount: 12
+        },
+        {
+            id: 'verification-006',
+            projectId: 'CVE-FOREST-002',
+            vct: 3420,
+            confidence: 97.5,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 12
+        },
+        
+        // CVE-RANGELAND-003 - Recent project
+        {
+            id: 'verification-007',
+            projectId: 'CVE-RANGELAND-003',
+            vct: 680,
+            confidence: 95.9,
+            timestamp: new Date(now - 3 * oneMonth).toISOString(),
+            sampleCount: 6
+        },
+        {
+            id: 'verification-008',
+            projectId: 'CVE-RANGELAND-003',
+            vct: 720,
+            confidence: 96.4,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 6
+        },
+        
+        // CVE-CROPLAND-004 - Growing project
+        {
+            id: 'verification-009',
+            projectId: 'CVE-CROPLAND-004',
+            vct: 1890,
+            confidence: 94.2,
+            timestamp: new Date(now - 6 * oneMonth).toISOString(),
+            sampleCount: 10
+        },
+        {
+            id: 'verification-010',
+            projectId: 'CVE-CROPLAND-004',
+            vct: 2100,
+            confidence: 95.8,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 10
+        },
+        
+        // CVE-WETLAND-005 - Specialized project
+        {
+            id: 'verification-011',
+            projectId: 'CVE-WETLAND-005',
+            vct: 520,
+            confidence: 98.1,
+            timestamp: new Date(now - 9 * oneMonth).toISOString(),
+            sampleCount: 5
+        },
+        {
+            id: 'verification-012',
+            projectId: 'CVE-WETLAND-005',
+            vct: 580,
+            confidence: 98.5,
+            timestamp: new Date(now - 3 * oneMonth).toISOString(),
+            sampleCount: 5
+        },
+        
+        // CVE-FOREST-006 - Long-term project with many verifications
+        {
+            id: 'verification-013',
+            projectId: 'CVE-FOREST-006',
+            vct: 4200,
+            confidence: 93.5,
+            timestamp: new Date(now - 36 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        {
+            id: 'verification-014',
+            projectId: 'CVE-FOREST-006',
+            vct: 4850,
+            confidence: 94.8,
+            timestamp: new Date(now - 24 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        {
+            id: 'verification-015',
+            projectId: 'CVE-FOREST-006',
+            vct: 5520,
+            confidence: 96.2,
+            timestamp: new Date(now - 12 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        {
+            id: 'verification-016',
+            projectId: 'CVE-FOREST-006',
+            vct: 6120,
+            confidence: 97.3,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        
+        // Additional recent verifications for better chart visualization
+        {
+            id: 'verification-017',
+            projectId: 'CVE-CROPLAND-001',
+            vct: 1380,
+            confidence: 97.8,
+            timestamp: new Date(now - 15 * oneDay).toISOString(),
+            sampleCount: 8
+        },
+        {
+            id: 'verification-018',
+            projectId: 'CVE-FOREST-002',
+            vct: 3580,
+            confidence: 98.1,
+            timestamp: new Date(now - 10 * oneDay).toISOString(),
+            sampleCount: 12
         }
     ];
+    
+    // Sort verifications by timestamp (newest first)
+    verificationsData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     
     updateProjectsTable();
     updateCharts();
@@ -142,33 +339,44 @@ function updateVCTChart() {
     const ctx = document.getElementById('vct-chart');
     if (!ctx) return;
     
-    // Group verifications by project and time
+    // Group verifications by project and sort each project's data by timestamp
     const projectGroups = {};
     verificationsData.forEach(v => {
         if (!projectGroups[v.projectId]) {
             projectGroups[v.projectId] = [];
         }
-        const date = new Date(v.timestamp);
         projectGroups[v.projectId].push({
-            x: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
-            y: v.vct
+            timestamp: v.timestamp,
+            vct: v.vct
         });
     });
     
-    // Sort by timestamp
+    // Sort each project's data by timestamp
     Object.keys(projectGroups).forEach(projectId => {
-        projectGroups[projectId].sort((a, b) => new Date(a.x) - new Date(b.x));
+        projectGroups[projectId].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     });
     
+    // Create datasets using x/y coordinates so each project's line connects properly
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
     const datasets = Object.keys(projectGroups).map((projectId, index) => {
-        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+        const projectData = projectGroups[projectId];
+        
         return {
             label: projectId,
-            data: projectGroups[projectId],
+            data: projectData.map(item => ({
+                x: new Date(item.timestamp).getTime(),
+                y: item.vct
+            })),
             borderColor: colors[index % colors.length],
             backgroundColor: colors[index % colors.length] + '40',
             tension: 0.4,
-            fill: false
+            fill: false,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: colors[index % colors.length],
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2,
+            borderWidth: 2
         };
     });
     
@@ -183,7 +391,20 @@ function updateVCTChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            elements: {
+                line: {
+                    borderJoinStyle: 'round',
+                    borderCapStyle: 'round'
+                },
+                point: {
+                    hoverRadius: 6
+                }
+            },
             plugins: {
                 legend: {
                     display: true,
@@ -191,34 +412,65 @@ function updateVCTChart() {
                     labels: {
                         color: '#a0aec0',
                         font: {
-                            size: 12
-                        }
+                            size: 11
+                        },
+                        usePointStyle: true,
+                        padding: 15
                     }
                 },
-                title: {
-                    display: false
+                tooltip: {
+                    backgroundColor: 'rgba(30, 39, 66, 0.95)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#a0aec0',
+                    borderColor: '#2d3748',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        title: function(context) {
+                            const date = new Date(context[0].parsed.x);
+                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        },
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' VCT';
+                        }
+                    }
                 }
             },
             scales: {
                 x: {
+                    type: 'linear',
+                    position: 'bottom',
                     ticks: {
                         color: '#a0aec0',
+                        font: {
+                            size: 10
+                        },
                         maxRotation: 45,
-                        minRotation: 45
+                        minRotation: 45,
+                        callback: function(value) {
+                            const date = new Date(value);
+                            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                        }
                     },
                     grid: {
-                        color: '#2d3748'
+                        color: '#2d3748',
+                        drawBorder: false
                     }
                 },
                 y: {
+                    beginAtZero: true,
                     ticks: {
                         color: '#a0aec0',
+                        font: {
+                            size: 10
+                        },
                         callback: function(value) {
                             return value.toLocaleString();
                         }
                     },
                     grid: {
-                        color: '#2d3748'
+                        color: '#2d3748',
+                        drawBorder: false
                     }
                 }
             }
@@ -230,55 +482,90 @@ function updateConfidenceChart() {
     const ctx = document.getElementById('confidence-chart');
     if (!ctx) return;
     
-    // Group by time period (monthly)
-    const monthlyData = {};
-    verificationsData.forEach(v => {
+    // Sort verifications by timestamp
+    const sortedVerifications = [...verificationsData].sort((a, b) => 
+        new Date(a.timestamp) - new Date(b.timestamp)
+    );
+    
+    // Get labels (formatted dates)
+    const labels = sortedVerifications.map(v => {
         const date = new Date(v.timestamp);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        
-        if (!monthlyData[monthKey]) {
-            monthlyData[monthKey] = [];
-        }
-        monthlyData[monthKey].push(v.confidence);
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     });
     
-    const labels = Object.keys(monthlyData).sort();
-    const data = labels.map(key => {
-        const values = monthlyData[key];
-        return values.reduce((sum, v) => sum + v, 0) / values.length;
-    });
+    // Get confidence values
+    const data = sortedVerifications.map(v => v.confidence);
     
     if (confidenceChart) {
         confidenceChart.destroy();
     }
     
     confidenceChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Average Confidence (%)',
+                label: 'Confidence Score (%)',
                 data: data,
-                backgroundColor: '#10b981',
                 borderColor: '#10b981',
-                borderWidth: 1
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             plugins: {
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#a0aec0',
+                        font: {
+                            size: 11
+                        },
+                        usePointStyle: true,
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 39, 66, 0.95)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#a0aec0',
+                    borderColor: '#2d3748',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Confidence: ' + context.parsed.y.toFixed(1) + '%';
+                        }
+                    }
                 }
             },
             scales: {
                 x: {
                     ticks: {
-                        color: '#a0aec0'
+                        color: '#a0aec0',
+                        font: {
+                            size: 10
+                        },
+                        maxRotation: 45,
+                        minRotation: 45
                     },
                     grid: {
-                        color: '#2d3748'
+                        color: '#2d3748',
+                        drawBorder: false
                     }
                 },
                 y: {
@@ -287,12 +574,17 @@ function updateConfidenceChart() {
                     max: 100,
                     ticks: {
                         color: '#a0aec0',
+                        font: {
+                            size: 10
+                        },
                         callback: function(value) {
                             return value + '%';
-                        }
+                        },
+                        stepSize: 2
                     },
                     grid: {
-                        color: '#2d3748'
+                        color: '#2d3748',
+                        drawBorder: false
                     }
                 }
             }

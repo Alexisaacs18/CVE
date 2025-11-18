@@ -783,8 +783,15 @@ body {
     margin-bottom: 2rem;
 }
 
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
 .dashboard-section canvas {
     max-height: 300px;
+    height: 300px !important;
 }
 
 @media (max-width: 768px) {
