@@ -27,12 +27,12 @@
     <div class="app-body">
         <!-- Project View -->
         <div id="project-view" class="view-container active">
-        <!-- Sidebar -->
-        <aside class="sidebar-container">
-            <!-- Project Creation Section -->
-            <section class="panel" id="project-panel">
-                <h2 class="panel-title">Project & Boundary</h2>
-                <div class="form-group">
+            <!-- Sidebar -->
+            <aside class="sidebar-container">
+                <!-- Project Creation Section -->
+                <section class="panel" id="project-panel">
+                    <h2 class="panel-title">Project & Boundary</h2>
+                    <div class="form-group">
                     <label for="land-use">Land Use Type</label>
                     <select id="land-use" class="form-control">
                         <option value="">Select Land Use Type</option>
@@ -107,10 +107,10 @@
                     </label>
                     <p class="layer-description">Model confidence heatmap (sampling priority)</p>
                 </div>
-            </section>
+                </section>
 
-            <!-- Optimization Section -->
-            <section class="panel" id="optimization-panel" style="display: none;">
+                <!-- Optimization Section -->
+                <section class="panel" id="optimization-panel" style="display: none;">
                 <h2 class="panel-title">Ground-Truthing Optimization</h2>
                 <button id="optimize-btn" class="btn btn-primary btn-large">
                     Run Sampling Optimization
@@ -132,10 +132,10 @@
                     </div>
                     <div class="sampling-points-list" id="sampling-points-list"></div>
                 </div>
-            </section>
+                </section>
 
-            <!-- Verification Section -->
-            <section class="panel" id="verification-panel" style="display: none;">
+                <!-- Verification Section -->
+                <section class="panel" id="verification-panel" style="display: none;">
                 <h2 class="panel-title">Verification & Reporting</h2>
                 <div id="sample-inputs" class="sample-inputs"></div>
                 <button id="verify-btn" class="btn btn-primary btn-large" disabled>
@@ -157,39 +157,39 @@
                         </div>
                     </div>
                 </div>
-            </section>
-        </aside>
+                </section>
+            </aside>
 
-        <!-- Map Container -->
-        <main class="map-container">
-            <div id="map"></div>
-            <div class="map-controls">
-                <!-- Search Bar -->
-                <div class="search-container">
-                    <div class="search-box">
-                        <input 
-                            type="text" 
-                            id="address-search" 
-                            class="search-input" 
-                            placeholder="Search for an address or location..."
-                            autocomplete="off"
-                        />
-                        <button id="search-btn" class="search-button" title="Search">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                        </button>
+            <!-- Map Container -->
+            <main class="map-container">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input 
+                                type="text" 
+                                id="address-search" 
+                                class="search-input" 
+                                placeholder="Search for an address or location..."
+                                autocomplete="off"
+                            />
+                            <button id="search-btn" class="search-button" title="Search">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="search-results" class="search-results"></div>
                     </div>
-                    <div id="search-results" class="search-results"></div>
+                    
+                    <div class="map-legend" id="map-legend" style="display: none;">
+                        <h3>Drawing Tools</h3>
+                        <p>Use the drawing tools to create your project boundary polygon</p>
+                    </div>
                 </div>
-                
-                <div class="map-legend" id="map-legend" style="display: none;">
-                    <h3>Drawing Tools</h3>
-                    <p>Use the drawing tools to create your project boundary polygon</p>
-                </div>
-            </div>
-        </main>
+            </main>
         </div>
 
         <!-- Performance Dashboard View -->
@@ -260,31 +260,10 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        
-        // Make Firebase available globally
-        window.firebaseModules = {
-            initializeApp,
-            getAuth,
-            signInWithCustomToken,
-            getFirestore,
-            collection,
-            doc,
-            setDoc,
-            getDoc,
-            onSnapshot,
-            query,
-            where,
-            orderBy
-        };
-    </script>
+    <!-- Storage Backend (LocalStorage) -->
+    <script src="storage.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
     <script src="dashboard.js"></script>
 </body>

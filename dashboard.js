@@ -4,46 +4,41 @@ let verificationsData = [];
 let vctChart = null;
 let confidenceChart = null;
 
-// Load data from Firebase
+// Load data from localStorage backend
 async function loadDashboardData() {
-    if (!window.firebaseConfig || !window.firebaseConfig.isInitialized()) {
-        console.log('Firebase not initialized, using demo data');
+    if (!window.localStorageBackend) {
+        console.log('Storage backend not available, using demo data');
         loadDemoData();
         return;
     }
     
     try {
-        const db = window.firebaseConfig.getDb();
-        const userId = window.firebaseConfig.getUserId();
-        const APP_ID = window.firebaseConfig.APP_ID;
+        const userId = window.localStorageBackend.getUserId();
         
-        const { collection, query, onSnapshot, orderBy } = window.firebaseModules;
-        
-        // Load projects
-        const projectsRef = collection(db, `artifacts/${APP_ID}/users/${userId}/projects`);
-        const projectsQuery = query(projectsRef, orderBy('createdAt', 'desc'));
-        
-        onSnapshot(projectsQuery, (snapshot) => {
-            projectsData = [];
-            snapshot.forEach((doc) => {
-                projectsData.push({ id: doc.id, ...doc.data() });
-            });
+        // Load projects with subscription (real-time updates)
+        const unsubscribeProjects = window.localStorageBackend.projects.subscribe((data) => {
+            projectsData = data.map(p => ({ id: p.projectId, ...p }));
             updateProjectsTable();
             updateMetrics();
-        });
+        }, userId);
         
-        // Load verifications
-        const verificationsRef = collection(db, `artifacts/${APP_ID}/users/${userId}/verifications`);
-        const verificationsQuery = query(verificationsRef, orderBy('timestamp', 'desc'));
+        // Store unsubscribe function for cleanup
+        window._unsubscribeProjects = unsubscribeProjects;
         
-        onSnapshot(verificationsQuery, (snapshot) => {
-            verificationsData = [];
-            snapshot.forEach((doc) => {
-                verificationsData.push({ id: doc.id, ...doc.data() });
-            });
+        // Load verifications with subscription (real-time updates)
+        const unsubscribeVerifications = window.localStorageBackend.verifications.subscribe((data) => {
+            verificationsData = data.map(v => ({ id: v.id, ...v }));
             updateCharts();
             updateMetrics();
-        });
+        }, userId, { orderBy: 'timestamp', orderDirection: 'desc' });
+        
+        // Store unsubscribe function for cleanup
+        window._unsubscribeVerifications = unsubscribeVerifications;
+        
+        // If no data exists, load demo data
+        if (projectsData.length === 0 && verificationsData.length === 0) {
+            loadDemoData();
+        }
         
     } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -609,31 +604,31 @@ window.refreshDashboard = refreshDashboard;
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-        // Wait for Firebase to be ready
-        if (window.firebaseConfig && window.firebaseConfig.isInitialized()) {
+        // Wait for storage backend to be ready
+        if (window.localStorageBackend) {
             loadDashboardData();
         } else {
             setTimeout(() => {
-                if (window.firebaseConfig && window.firebaseConfig.isInitialized()) {
+                if (window.localStorageBackend) {
                     loadDashboardData();
                 } else {
                     loadDemoData();
                 }
-            }, 1000);
+            }, 100);
         }
     });
 } else {
     // DOM already loaded
-    if (window.firebaseConfig && window.firebaseConfig.isInitialized()) {
+    if (window.localStorageBackend) {
         loadDashboardData();
     } else {
         setTimeout(() => {
-            if (window.firebaseConfig && window.firebaseConfig.isInitialized()) {
+            if (window.localStorageBackend) {
                 loadDashboardData();
             } else {
                 loadDemoData();
             }
-        }, 1000);
+        }, 100);
     }
 }
 

@@ -57,7 +57,7 @@ A web-based platform for reducing the cost of Measurement, Reporting, and Verifi
 - **Leaflet.js**: Interactive map functionality
 - **Leaflet Draw**: Polygon drawing tools
 - **Nominatim (OpenStreetMap)**: Address geocoding service for location search
-- **Firebase**: Backend services (Firestore for data, Auth for authentication)
+- **LocalStorage**: Client-side data persistence (no backend required)
 - **Chart.js**: Data visualization for analytics dashboard
 
 ## Browser Compatibility
@@ -66,34 +66,40 @@ Works in all modern browsers that support ES6 JavaScript and Leaflet.js.
 
 ## Backend & Persistence
 
-The application uses Firebase Firestore for data persistence:
+The application uses **LocalStorage** for data persistence (no backend server required):
 
-### Data Collections
+### Data Storage
 
-1. **Projects**: `/artifacts/{appId}/users/{userId}/projects`
+1. **Projects**: Stored in browser localStorage
+   - Key: `cve_cve-platform_projects_{userId}`
    - Stores project data (boundary, land use, practices, area)
    - Allows users to save and return to unfinished projects
+   - Persists across browser sessions
 
-2. **Verifications**: `/artifacts/{appId}/users/{userId}/verifications`
+2. **Verifications**: Stored in browser localStorage
+   - Key: `cve_cve-platform_verifications_{userId}`
    - Stores completed verification records
    - Includes VCT, confidence score, timestamp, and sample data
    - Used for analytics and historical tracking
 
-### Authentication
+### Features
 
-- Uses Firebase Auth with custom token authentication
-- Supports `__initial_auth_token` for Canvas environment integration
-- Falls back to demo mode if Firebase is not configured
+- **No Setup Required**: Works immediately, no backend configuration needed
+- **Persistent**: Data survives page refreshes and browser restarts
+- **Real-time Updates**: Uses event listeners to update dashboard when data changes
+- **User Isolation**: Each browser gets its own user ID stored in localStorage
+- **Demo Data**: If no data exists, loads realistic demo data for demonstration
 
-### Configuration
+### Data Location
 
-To use Firebase, update `firebase-config.js` with your Firebase project credentials:
-- API Key
-- Auth Domain
-- Project ID
-- Storage Bucket
-- Messaging Sender ID
-- App ID
+All data is stored in the browser's localStorage. To view or clear:
+- Open browser DevTools (F12)
+- Go to Application/Storage tab
+- Look for keys starting with `cve_cve-platform_`
+
+### Migration to Real Backend
+
+The code is structured to easily swap localStorage for a real backend (Firebase, REST API, etc.) by replacing the `storage.js` implementation.
 
 ## Notes
 

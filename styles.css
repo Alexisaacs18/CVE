@@ -28,6 +28,8 @@ body {
     color: var(--text-primary);
     overflow: hidden;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .app-header {
@@ -35,6 +37,9 @@ body {
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 2rem;
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
 }
 
 .header-content {
@@ -92,21 +97,23 @@ body {
     color: white;
 }
 
+.app-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
 /* View Containers */
 .view-container {
     display: none;
     flex: 1;
     overflow: hidden;
+    flex-direction: row;
 }
 
 .view-container.active {
     display: flex;
-}
-
-.app-body {
-    display: flex;
-    height: calc(100vh - 73px);
-    overflow: hidden;
 }
 
 .sidebar-container {

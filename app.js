@@ -437,11 +437,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialize Firebase when ready
-    window.onFirebaseReady = function() {
-        console.log('Firebase ready, initializing app');
-        // Load projects if needed
-    };
+    // Initialize storage backend
+    if (window.localStorageBackend) {
+        console.log('✅ Storage backend ready');
+    }
 });
 
 // Geocoding functions
@@ -559,54 +558,32 @@ function hideSearchResults() {
     resultsContainer.innerHTML = '';
 }
 
-// Firebase CRUD Operations
+// Storage Operations (using localStorage backend)
 async function saveProject(projectData) {
-    if (!window.firebaseConfig || !window.firebaseConfig.isInitialized()) {
-        console.log('Firebase not initialized, skipping save');
-        return;
-    }
-    
     try {
-        const db = window.firebaseConfig.getDb();
-        const userId = window.firebaseConfig.getUserId();
-        const APP_ID = window.firebaseConfig.APP_ID;
-        
-        const { doc, setDoc } = window.firebaseModules;
-        const projectRef = doc(db, `artifacts/${APP_ID}/users/${userId}/projects/${projectData.projectId}`);
-        
-        await setDoc(projectRef, {
-            ...projectData,
-            updatedAt: new Date().toISOString()
-        }, { merge: true });
-        
-        console.log('Project saved:', projectData.projectId);
+        if (window.localStorageBackend) {
+            await window.localStorageBackend.projects.save(projectData);
+            // Trigger update event
+            window.dispatchEvent(new Event('projectsUpdated'));
+        } else {
+            console.log('⚠️ Storage backend not available');
+        }
     } catch (error) {
         console.error('Error saving project:', error);
     }
 }
 
 async function saveVerification(verificationData) {
-    if (!window.firebaseConfig || !window.firebaseConfig.isInitialized()) {
-        console.log('Firebase not initialized, skipping save');
-        return;
-    }
-    
     try {
-        const db = window.firebaseConfig.getDb();
-        const userId = window.firebaseConfig.getUserId();
-        const APP_ID = window.firebaseConfig.APP_ID;
-        
-        const { collection, doc, setDoc } = window.firebaseModules;
-        const verificationId = `verification-${Date.now()}`;
-        const verificationRef = doc(db, `artifacts/${APP_ID}/users/${userId}/verifications/${verificationId}`);
-        
-        await setDoc(verificationRef, {
-            ...verificationData,
-            id: verificationId,
-            userId: userId
-        });
-        
-        console.log('Verification saved:', verificationId);
+        if (window.localStorageBackend) {
+            const verificationId = `verification-${Date.now()}`;
+            await window.localStorageBackend.verifications.save({
+                ...verificationData,
+                id: verificationId
+            });
+        } else {
+            console.log('⚠️ Storage backend not available');
+        }
     } catch (error) {
         console.error('Error saving verification:', error);
     }
