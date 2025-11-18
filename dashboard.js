@@ -35,10 +35,28 @@ async function loadDashboardData() {
         // Store unsubscribe function for cleanup
         window._unsubscribeVerifications = unsubscribeVerifications;
         
-        // If no data exists, load demo data
-        if (projectsData.length === 0 && verificationsData.length === 0) {
-            loadDemoData();
-        }
+        // Check if localStorage is empty and seed with demo data
+        setTimeout(async () => {
+            const userId = window.localStorageBackend.getUserId();
+            const existingProjects = window.localStorageBackend.projects.getAll(userId);
+            const existingVerifications = window.localStorageBackend.verifications.getAll(userId);
+            
+            console.log('📊 Checking for existing data:', {
+                projects: existingProjects.length,
+                verifications: existingVerifications.length
+            });
+            
+            if (existingProjects.length === 0 && existingVerifications.length === 0) {
+                console.log('📊 No data found, seeding localStorage with demo data...');
+                await seedDemoData();
+                // Reload after seeding
+                setTimeout(() => {
+                    loadDashboardData();
+                }, 100);
+            } else {
+                console.log('✅ Found existing data, skipping demo data seed');
+            }
+        }, 500);
         
     } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -46,7 +64,245 @@ async function loadDashboardData() {
     }
 }
 
-// Demo data for when Firebase is not available
+// Seed demo data to localStorage
+async function seedDemoData() {
+    if (!window.localStorageBackend) {
+        console.log('Storage backend not available');
+        return;
+    }
+    
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneMonth = 30 * oneDay;
+    const oneYear = 365 * oneDay;
+    
+    // Generate realistic projects with varied dates
+    const demoProjects = [
+        {
+            projectId: 'CVE-CROPLAND-001',
+            landUse: 'Cropland',
+            area_ha: 1250,
+            practices: 'No-Till',
+            projectDate: '2022-01-15',
+            createdAt: new Date(now - 18 * oneMonth).toISOString()
+        },
+        {
+            projectId: 'CVE-FOREST-002',
+            landUse: 'Forest',
+            area_ha: 3200,
+            practices: 'Afforestation',
+            projectDate: '2021-06-01',
+            createdAt: new Date(now - 30 * oneMonth).toISOString()
+        },
+        {
+            projectId: 'CVE-RANGELAND-003',
+            landUse: 'Rangeland',
+            area_ha: 850,
+            practices: 'Rotational Grazing',
+            projectDate: '2022-09-10',
+            createdAt: new Date(now - 15 * oneMonth).toISOString()
+        },
+        {
+            projectId: 'CVE-CROPLAND-004',
+            landUse: 'Cropland',
+            area_ha: 2100,
+            practices: 'Cover Crops',
+            projectDate: '2023-03-20',
+            createdAt: new Date(now - 9 * oneMonth).toISOString()
+        },
+        {
+            projectId: 'CVE-WETLAND-005',
+            landUse: 'Wetland',
+            area_ha: 450,
+            practices: 'Restoration',
+            projectDate: '2022-11-05',
+            createdAt: new Date(now - 13 * oneMonth).toISOString()
+        },
+        {
+            projectId: 'CVE-FOREST-006',
+            landUse: 'Forest',
+            area_ha: 5800,
+            practices: 'Afforestation',
+            projectDate: '2020-04-12',
+            createdAt: new Date(now - 44 * oneMonth).toISOString()
+        }
+    ];
+    
+    // Save projects to localStorage
+    for (const project of demoProjects) {
+        await window.localStorageBackend.projects.save(project);
+    }
+    
+    // Generate realistic verifications with historical data
+    const demoVerifications = [
+        // CVE-CROPLAND-001 - Multiple verifications over time
+        {
+            id: 'verification-001',
+            projectId: 'CVE-CROPLAND-001',
+            vct: 1180,
+            confidence: 94.8,
+            timestamp: new Date(now - 12 * oneMonth).toISOString(),
+            sampleCount: 8
+        },
+        {
+            id: 'verification-002',
+            projectId: 'CVE-CROPLAND-001',
+            vct: 1245,
+            confidence: 96.2,
+            timestamp: new Date(now - 6 * oneMonth).toISOString(),
+            sampleCount: 8
+        },
+        {
+            id: 'verification-003',
+            projectId: 'CVE-CROPLAND-001',
+            vct: 1320,
+            confidence: 97.1,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 8
+        },
+        
+        // CVE-FOREST-002 - Annual verifications
+        {
+            id: 'verification-004',
+            projectId: 'CVE-FOREST-002',
+            vct: 2850,
+            confidence: 95.3,
+            timestamp: new Date(now - 24 * oneMonth).toISOString(),
+            sampleCount: 12
+        },
+        {
+            id: 'verification-005',
+            projectId: 'CVE-FOREST-002',
+            vct: 3120,
+            confidence: 96.7,
+            timestamp: new Date(now - 12 * oneMonth).toISOString(),
+            sampleCount: 12
+        },
+        {
+            id: 'verification-006',
+            projectId: 'CVE-FOREST-002',
+            vct: 3420,
+            confidence: 97.5,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 12
+        },
+        
+        // CVE-RANGELAND-003 - Recent project
+        {
+            id: 'verification-007',
+            projectId: 'CVE-RANGELAND-003',
+            vct: 680,
+            confidence: 95.9,
+            timestamp: new Date(now - 3 * oneMonth).toISOString(),
+            sampleCount: 6
+        },
+        {
+            id: 'verification-008',
+            projectId: 'CVE-RANGELAND-003',
+            vct: 720,
+            confidence: 96.4,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 6
+        },
+        
+        // CVE-CROPLAND-004 - Growing project
+        {
+            id: 'verification-009',
+            projectId: 'CVE-CROPLAND-004',
+            vct: 1890,
+            confidence: 94.2,
+            timestamp: new Date(now - 6 * oneMonth).toISOString(),
+            sampleCount: 10
+        },
+        {
+            id: 'verification-010',
+            projectId: 'CVE-CROPLAND-004',
+            vct: 2100,
+            confidence: 95.8,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 10
+        },
+        
+        // CVE-WETLAND-005 - Specialized project
+        {
+            id: 'verification-011',
+            projectId: 'CVE-WETLAND-005',
+            vct: 520,
+            confidence: 98.1,
+            timestamp: new Date(now - 9 * oneMonth).toISOString(),
+            sampleCount: 5
+        },
+        {
+            id: 'verification-012',
+            projectId: 'CVE-WETLAND-005',
+            vct: 580,
+            confidence: 98.5,
+            timestamp: new Date(now - 3 * oneMonth).toISOString(),
+            sampleCount: 5
+        },
+        
+        // CVE-FOREST-006 - Long-term project with many verifications
+        {
+            id: 'verification-013',
+            projectId: 'CVE-FOREST-006',
+            vct: 4200,
+            confidence: 93.5,
+            timestamp: new Date(now - 36 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        {
+            id: 'verification-014',
+            projectId: 'CVE-FOREST-006',
+            vct: 4850,
+            confidence: 94.8,
+            timestamp: new Date(now - 24 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        {
+            id: 'verification-015',
+            projectId: 'CVE-FOREST-006',
+            vct: 5520,
+            confidence: 96.2,
+            timestamp: new Date(now - 12 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        {
+            id: 'verification-016',
+            projectId: 'CVE-FOREST-006',
+            vct: 6120,
+            confidence: 97.3,
+            timestamp: new Date(now - 1 * oneMonth).toISOString(),
+            sampleCount: 18
+        },
+        
+        // Additional recent verifications for better chart visualization
+        {
+            id: 'verification-017',
+            projectId: 'CVE-CROPLAND-001',
+            vct: 1380,
+            confidence: 97.8,
+            timestamp: new Date(now - 15 * oneDay).toISOString(),
+            sampleCount: 8
+        },
+        {
+            id: 'verification-018',
+            projectId: 'CVE-FOREST-002',
+            vct: 3580,
+            confidence: 98.1,
+            timestamp: new Date(now - 10 * oneDay).toISOString(),
+            sampleCount: 12
+        }
+    ];
+    
+    // Save verifications to localStorage
+    for (const verification of demoVerifications) {
+        await window.localStorageBackend.verifications.save(verification);
+    }
+    
+    console.log('✅ Demo data seeded to localStorage');
+}
+
+// Demo data for when Firebase is not available (fallback only)
 function loadDemoData() {
     const now = Date.now();
     const oneDay = 24 * 60 * 60 * 1000;
@@ -598,8 +854,34 @@ function refreshDashboard() {
     loadDashboardData();
 }
 
+// Reset and seed demo data (manual trigger)
+async function resetAndSeedDemoData() {
+    if (!window.localStorageBackend) {
+        alert('Storage backend not available');
+        return;
+    }
+    
+    const userId = window.localStorageBackend.getUserId();
+    
+    // Clear existing data
+    localStorage.removeItem(`cve_cve-platform_projects_${userId}`);
+    localStorage.removeItem(`cve_cve-platform_verifications_${userId}`);
+    
+    console.log('🗑️ Cleared existing data, seeding demo data...');
+    
+    // Seed demo data
+    await seedDemoData();
+    
+    // Reload dashboard after a brief delay to ensure data is saved
+    setTimeout(() => {
+        loadDashboardData();
+        console.log('✅ Demo data loaded and dashboard refreshed!');
+    }, 200);
+}
+
 // Initialize dashboard when view is shown
 window.refreshDashboard = refreshDashboard;
+window.resetAndSeedDemoData = resetAndSeedDemoData;
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
@@ -634,4 +916,19 @@ if (document.readyState === 'loading') {
 
 // Make loadProject available globally
 window.loadProject = loadProject;
+
+// Add event listener for reset button
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetBtn = document.getElementById('reset-demo-data-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', resetAndSeedDemoData);
+        }
+    });
+} else {
+    const resetBtn = document.getElementById('reset-demo-data-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetAndSeedDemoData);
+    }
+}
 

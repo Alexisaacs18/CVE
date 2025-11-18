@@ -212,6 +212,18 @@ body {
     cursor: not-allowed;
 }
 
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
 .btn-large {
     padding: 1rem 1.5rem;
     font-size: 1rem;
